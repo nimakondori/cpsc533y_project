@@ -1,0 +1,79 @@
+program: run.py
+method: random
+metric:
+  name: epoch/best_eval_metric
+  goal: maximize
+name: as_sweep
+early_terminate:
+  type: hyperband
+  min_iter: 12
+  eta: 2
+
+parameters:
+  train:
+    parameters:
+      optimizer:
+        parameters:
+          lr:
+            values: [0.0001, 0.00001, 0.000001]
+          weight_decay:
+            values: [0.0, 0.001, 0.0001, 0.00001, 0.000001]
+
+      criterion:
+        parameters:
+          attn_lambda:
+            value: 0
+          frame_lambda:
+            value: 0
+          classification_lambda:
+            value: 0
+
+  model:
+    parameters:
+
+      output_dropout_rate:
+        values: [0.0, 0.1, 0.2, 0.4, 0.5, 0.6]
+
+      spatial_dropout_rate:
+        values: [0.0, 0.1, 0.2, 0.4, 0.5]
+
+      temporal_hidden_size:
+        values: [192, 384, 768]
+      temporal_num_heads:
+        values: [ 1, 2, 4, 6, 12 ]
+      temporal_num_layers:
+        values: [2, 4, 8, 12]
+      temporal_mlp_dim:
+        values: [192, 384, 768, 3072]
+      temporal_dropout_rate:
+        values: [ 0.0, 0.1, 0.2, 0.4, 0.5]
+      temporal_aggr_method:
+        values: [mean, cls]
+
+      vid_hidden_size:
+        values: [192, 384, 768]
+      vid_num_heads:
+        values: [ 1, 2, 4, 6, 12 ]
+      vid_num_layers:
+        values: [2, 4, 8, 12]
+      vid_mlp_dim:
+        values: [192, 384, 768, 3072]
+      vid_dropout_rate:
+        values: [ 0.0, 0.1, 0.2, 0.4, 0.5]
+      vid_aggr_method:
+        values: [mean, cls]
+
+  data:
+    parameters:
+      max_frames_sampled_frames:
+        values: [[32, 16], [32,32], [144, 32], [144, 36], [144, 64], [64, 32], [64, 64], [128, 32], [128, 64]]
+
+command:
+  - ${env}
+  - /scratch/st-puranga-1/users/masoud19/workspace/heart-transformer/venvht/bin/python3
+  - ${program}
+  - --config_path
+  - ./configs/as_sweep.yml
+  - --save_dir
+  - ./logs/as_sweep
+  - --sweep

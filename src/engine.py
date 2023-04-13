@@ -97,7 +97,7 @@ class Engine:
     @staticmethod
     def _init_wandb(config):
         wandb.init(
-            project="CPSC533y-Project",
+            project=config.train.wandb_project_name,
             name=config.train.wandb_run_name,
             config=config,
             entity=config.train.wandb_entity,

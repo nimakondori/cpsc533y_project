@@ -1,19 +1,20 @@
 train:
   epochs: 1000
-  batch_size: 1
+  batch_size: 5
   mode: as
   seed: 0
 
-  wandb_run_name: debug run
+  wandb_project_name: MetaformerGNN
+  wandb_run_name: run_1
   wandb_mode: online
   wandb_log_steps: 1 # Log every n steps
   wandb_group_name: debug # bunch multiple runs into a group
-  wandb_entity: MetaformerGNN 
+  wandb_entity: nimako 
   use_wandb: False
 
   optimizer:
     lr: 0.001
-    weight_decay: 0.000001
+    weight_decay: 0.00001
 
   scheduler:
     patience: 10
@@ -55,15 +56,14 @@ model:
 
 data:
   name: as # as|echonet|biplane
-  dataset_path: data/as_tom/
-  dataset_filename: annotations-all.csv
+  dataset_path: /mnt/data/
+  # dataset_filename: annotations-all.csv
   # dataset_path: /arc/project/st-puranga-1/datasets/aortic-stenonsis/round2
   frame_size: 224
-  max_frames: 10 # Number of samples prior to subsampling
+  max_frames: 32 # Number of samples prior to subsampling
   n_sampled_frames: 32 # Number of frame to subsample
   max_clips: 4 # Number of back to back clips to extract per video
   mean: 0.0857377 # for echonet: 0.1292275 | for AS: 0.0857377
   std: 0.1708384 # for echonet: 0.1902375 | for AS: 0.1708384
-  # TODO: Fix the above values for AS
   use_metadata: True
 gpu: 0

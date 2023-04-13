@@ -35,6 +35,10 @@ def run():
     with open(args.config_path) as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
 
+    # Create the directory if it does not exist
+    if not os.path.exists(args.save_dir):
+        os.makedirs(args.save_dir)
+        
     # Copy the provided config file into save_dir
     shutil.copyfile(args.config_path, os.path.join(args.save_dir, "config.yml"))
 

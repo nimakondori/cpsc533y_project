@@ -59,7 +59,7 @@ class AorticStenosisDataset(Dataset):
         # dataset_root = dataset_root.replace('~', os.environ['HOME'])
 
         # read in the data directory CSV as a pandas dataframe
-        dataset = pd.read_csv(join(dataset_path, "annotations-all_short.csv"))
+        dataset = pd.read_csv(join(dataset_path, "annotations-all.csv"))
         # append dataset root to each path in the dataframe
         dataset["path"] = dataset["path"].map(lambda x: join(dataset_path, x))
 
@@ -87,7 +87,7 @@ class AorticStenosisDataset(Dataset):
         self.mean_std = mean_std
         self.use_metadata = use_metadata
         if self.use_metadata:
-            self.metadata = pd.read_csv(join(dataset_path, "annotations-all_meta.csv"))
+            self.metadata = pd.read_csv(join(dataset_path, "annotations-all_meta_cleaned.csv"))
 
     def class_samplers(self):
         labels_AS = list()
@@ -292,7 +292,7 @@ class AorticStenosisDataset(Dataset):
             "metadata": metadata_pc,
             "pc_edge_index": pc_edge_index,
             "pc_features": pc_features,
-            "gnn_edge_index": gnn_edge_index
+            "gnn_edge_index": gnn_edge_index,
             # "class_label": torch.zeros(1),
         }
 

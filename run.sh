@@ -8,7 +8,7 @@ save_dir=${4:-"debug_run"}
 
 export CUDA_VISIBLE_DEVICES=$cuda
 
-command="python $filename --config_path configs/$config_filename --save_dir saved_files/$save_dir"
+command="python $filename --config_path configs/$config_filename --save_dir ./logs/$save_dir"
 echo "running the following command" $command
 
 # Run the command

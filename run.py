@@ -50,6 +50,7 @@ def run():
         datefmt="%H:%M:%S",
         level=logging.INFO,
     )
+    
     logger = logging.getLogger(__name__)
     # Add a StreamHandler to output logs to the console
     console_handler = logging.StreamHandler()

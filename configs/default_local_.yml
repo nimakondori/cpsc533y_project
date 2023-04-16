@@ -10,7 +10,7 @@ train:
   wandb_log_steps: 1 # Log every n steps
   wandb_group_name: debug # bunch multiple runs into a group
   wandb_entity: nimako 
-  use_wandb: True
+  use_wandb: False
 
   optimizer:
     lr: 0.001

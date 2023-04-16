@@ -424,8 +424,6 @@ class Engine:
                 }
             )
 
-        log_str += "- Main Loss = {} ".format(self.loss_meters["main_loss"].avg)
-
         log_str += "- LR = {} ".format(
             lr,
         )
@@ -486,8 +484,8 @@ class Engine:
                     }
                 )
 
-            log_str += "- Best Eval Metric = {}".format(
-                self.evaluator[eval_type].compute()
+            log_str += "- Best {} Measurement = {}".format(
+                eval_type.upper(), self.evaluator[eval_type].compute()
             )
 
             if self.config.train.use_wandb:

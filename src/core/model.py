@@ -134,8 +134,8 @@ class GNNClassifier(nn.Module):
         # Compute final output
         # y = self.softmax(self.fc(x.mean(dim=1))) # Global average pooling over frames
         x = self.fc(x.mean(dim=1))
-        y = self.softmax(x)
-        return x, y
+        # y = self.softmax(x)
+        return x, x
      
 class PointCloud(nn.Module):
     def __init__(self, 

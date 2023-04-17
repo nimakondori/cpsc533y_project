@@ -322,7 +322,7 @@ class Engine:
 
         with torch.no_grad():
 
-            logits = list()
+            # logits = list()
 
             # Change to eval mode
             self.model.eval()
@@ -334,6 +334,8 @@ class Engine:
             for i in iterator:
                 data_dict = self._prepare_input_data(data_iter)
 
+                # In validation the video shape is (batch_size, num_views, num_videos, num_frames, , height, width, channels)
+                # We need (batch_size, num_videos, num_frames, height, width, channels)
                 data_dict["vid"] = data_dict["vid"].squeeze(0)
                 data_dict["mask"] = data_dict["mask"].squeeze(0)
 
@@ -485,7 +487,7 @@ class Engine:
                 )
 
             log_str += "- Best {} Measurement = {}".format(
-                eval_type.upper(), self.evaluator[eval_type].compute()
+                eval_type.upper(), self.best_eval_metric
             )
 
             if self.config.train.use_wandb:

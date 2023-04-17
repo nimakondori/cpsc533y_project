@@ -30,7 +30,7 @@ train:
     maximize: False
 
 model:
-  checkpoint_path: # Must be specified for testing. Optional for training.
+  checkpoint_path: "logs/first_run_debug32/checkpoint_best.pth" # Must be specified for testing. Optional for training.
   num_classes: 4
   sub_models:
     - backbone  
@@ -66,4 +66,3 @@ data:
   mean: 0.0857377 # for echonet: 0.1292275 | for AS: 0.0857377
   std: 0.1708384 # for echonet: 0.1902375 | for AS: 0.1708384
   use_metadata: True
-gpu: 0

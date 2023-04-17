@@ -3,6 +3,7 @@ from torch.utils.data import DataLoader
 # from torch import distributed as dist
 import os
 import torch
+import platform
 
 DATASETS = {
     "as": AorticStenosisDataset,
@@ -12,6 +13,12 @@ DATASETS = {
 def get_dataloaders(config, dataset_train, dataset_val, train=True):
     dataloaders = dict()
 
+    if platform.system() == "Windows":
+        # Set the number of workers to 0 on Windows to avoid issues with DataLoader
+        num_workers = 0
+    else:
+        num_workers = min(8, os.cpu_count())
+        
     if train:
         dataloaders.update(
             {
@@ -19,7 +26,7 @@ def get_dataloaders(config, dataset_train, dataset_val, train=True):
                     dataset_train,
                     batch_size=config["batch_size"],
                     sampler=dataset_train.class_samplers(),
-                    num_workers=min(8, os.cpu_count()),
+                    num_workers=num_workers,
                     pin_memory=True,
                     drop_last=True,
                 )

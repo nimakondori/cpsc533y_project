@@ -17,7 +17,7 @@ elif [[ "$command" == "run" ]]; then
 	          --gpus device=ALL \
      	      --name=nima_cpsc533y_project  \
       	      --volume=$HOME/workspace/repos/cpsc533y_project:/workspace/cpsc533y_project \
-      	      --volume=/home/armin/AorticStenosis.XAI_AS/data/as_tom:/mnt/data/ \
+      	      --volume=$HOME/workspace/datasets/as_tom/:/mnt/data/ \
 			  --shm-size 4G\
       	      $final_tag
 else

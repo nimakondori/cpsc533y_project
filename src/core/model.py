@@ -15,7 +15,9 @@ class MetaFormerGNN(nn.Module):
         super(MetaFormerGNN, self).__init__()
 
         self.sub_models = config["sub_models"]
-
+        self.pc = None
+        self.backbone = None
+        self.gnn = None
         for sub_model in self.sub_models:
             if sub_model == "backbone":
                 self.backbone = ResNet3DBackbone(**config[sub_model])

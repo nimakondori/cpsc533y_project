@@ -10,11 +10,12 @@ import math
 import numpy as np
 import torch
 import torch.optim as optim
-from dataloader.as_dataloader import get_as_dataloader
+import logging
+import colorlog
+from colorlog import ColoredFormatter
 from tqdm import tqdm
 import torch.nn as nn
 from pytorch_metric_learning.utils.accuracy_calculator import AccuracyCalculator
-from colorlog import ColoredFormatter
 
 
 
@@ -316,3 +317,34 @@ def reset_evaluators(evaluators):
 
     for evaluator in evaluators.keys():
         evaluators[evaluator].reset()
+
+def apply_logger_configs(save_dir):
+    # Create the logger
+    logging.basicConfig(
+        filename=os.path.join(save_dir, "log.log"),
+        filemode="a",
+        format="%(asctime)s,%(msecs)d %(levelname)s %(message)s",
+        datefmt="%H:%M:%S",
+        level=logging.INFO,
+    )
+    logger = logging.getLogger(__name__)
+    # Add a StreamHandler to output logs to the console
+    formatter = ColoredFormatter(
+	"%(log_color)s%(levelname)-8s%(reset)s %(blue)s%(message)s",
+	datefmt=None,
+	reset=True,
+	log_colors={
+		'DEBUG':    'cyan',
+		'INFO':     'green',
+		'WARNING':  'yellow',
+		'ERROR':    'red',
+		'CRITICAL': 'red,bg_white',
+	},
+	secondary_log_colors={},
+	style='%'
+)
+    # Add colors using colorlog
+    handler = colorlog.StreamHandler()
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    return logger

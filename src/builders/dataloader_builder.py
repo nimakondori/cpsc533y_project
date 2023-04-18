@@ -18,7 +18,7 @@ def get_dataloaders(config, dataset_train, dataset_val, train=True):
         num_workers = 0
     else:
         num_workers = min(8, os.cpu_count())
-        
+
     if train:
         dataloaders.update(
             {
@@ -98,17 +98,6 @@ def build(config, train, transform, aug_transform, logger):
         if dataset_name in ["as", "prostate_single_patch", "kinetics"]
         else dataset_val.patient_data_dirs,
     )
-
-# def collate_fn(batch):
-#     # Get the maximum sequence length in the batch
-#     max_len = max([len(x) for x in batch])
-
-#     # Pad the sequences with zeros to the same length
-#     padded = [torch.nn.functional.pad(x['vid'], (0, max_len - len(x['vid']))) for x in batch]
-
-#     # Stack the padded sequences into a batch tensor
-#     batch_tensor = torch.stack(padded, dim=0)
-    # return batch_tensor
 
 def collate_fn(batch):
     collated = {}

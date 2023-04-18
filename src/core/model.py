@@ -15,7 +15,9 @@ class MetaFormerGNN(nn.Module):
         super(MetaFormerGNN, self).__init__()
 
         self.sub_models = config["sub_models"]
-
+        self.pc = None
+        self.backbone = None
+        self.gnn = None
         for sub_model in self.sub_models:
             if sub_model == "backbone":
                 self.backbone = ResNet3DBackbone(**config[sub_model])
@@ -93,11 +95,17 @@ class ResNet3DBackbone(nn.Module):
     def forward(self, video):
         # Set themodel to evaluation mode
         self.model.eval()
+
+        batch_size, num_vids, num_frames, height, width, channels = video.shape
         
-        batch_size, _, num_frames, height, width, channels = video.shape
+        video = video.contiguous().view(
+            video.shape[0], video.shape[1] * video.shape[2], video.shape[3], video.shape[4], video.shape[5]
+        )
+        video = video.permute(0, 4, 1, 2, 3)
+
         # Pass the video through the model
         with torch.no_grad():
-            embeddings = self.fc(self.model(video[:,0,...].permute(0, 4, 1, 2, 3)))
+            embeddings = self.fc(self.model(video))
         
         embeddings = embeddings.reshape(batch_size, num_frames, self.embed_dim)
         # Return the embeddings
@@ -134,8 +142,8 @@ class GNNClassifier(nn.Module):
         # Compute final output
         # y = self.softmax(self.fc(x.mean(dim=1))) # Global average pooling over frames
         x = self.fc(x.mean(dim=1))
-        y = self.softmax(x)
-        return x, y
+        # y = self.softmax(x)
+        return x, x
      
 class PointCloud(nn.Module):
     def __init__(self, 

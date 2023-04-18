@@ -3,6 +3,7 @@ import os
 import yaml
 import shutil
 from src.engine import Engine
+from src.utils.utils import apply_logger_configs
 import logging
 
 

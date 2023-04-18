@@ -12,12 +12,12 @@ import torch
 import torch.optim as optim
 import logging
 import colorlog
+import sys
+from subprocess import call
 from colorlog import ColoredFormatter
 from tqdm import tqdm
 import torch.nn as nn
 from pytorch_metric_learning.utils.accuracy_calculator import AccuracyCalculator
-
-
 
 
 def adjust_learning_rate(args, optimizer, epoch):
@@ -348,3 +348,19 @@ def apply_logger_configs(save_dir):
     handler.setFormatter(formatter)
     logger.addHandler(handler)
     return logger
+
+
+def print_cuda_statistics(logger):
+    # logger = logging.getLogger("Cuda Statistics")
+    logger.info('__Python VERSION:  {}'.format(sys.version))
+    logger.info('__pyTorch VERSION:  {}'.format(torch.__version__))
+    logger.info('__CUDA VERSION')
+    # call(["nvcc", "--version"])
+    logger.info('__CUDNN VERSION:  {}'.format(torch.backends.cudnn.version()))
+    logger.info('__Number CUDA Devices:  {}'.format(torch.cuda.device_count()))
+    logger.info('__Devices')
+    call(["nvidia-smi", "--format=csv",
+          "--query-gpu=index,name,driver_version,memory.total,memory.used,memory.free"])
+    logger.info('Active CUDA Device: GPU {}'.format(torch.cuda.current_device()))
+    logger.info('Available devices  {}'.format(torch.cuda.device_count()))
+    logger.info('Current cuda device  {}'.format(torch.cuda.current_device()))

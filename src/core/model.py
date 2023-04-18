@@ -46,7 +46,7 @@ class MetaFormerGNN(nn.Module):
         pc_embeddings = None
         if self.pc:
             if metadata_pc==None or pc_edge_index == None:
-                raise ValueError("Point cloud and edge index are required for the pointcloud model")
+                raise ValueError("Point cloud and edge index are required for the pointcloud model")    
             # create a fully connected point cloud 
             metadata_pc_obj = Data(x=pc_features, pos=metadata_pc, edge_index=pc_edge_index)
             pc_embeddings = self.pc(metadata_pc_obj)
@@ -79,15 +79,16 @@ class MetaFormerGNN(nn.Module):
         return param_dict
 
 class ResNet3DBackbone(nn.Module):
-    def __init__(self, pretrained, num_frames, embedding_size=128):
+    def __init__(self, pretrained, num_frames, last_layer_num=3,  embedding_size=128):
         super(ResNet3DBackbone, self).__init__()
         self.embed_dim = embedding_size
-        self.model = models.r3d_18(pretrained=pretrained)
+        self.r2p1d = models.r2plus1d_18(pretrained=pretrained)
+        self.backbone = nn.Sequential(*(list(self.r2p1d.children())[:last_layer_num]))
         # Modify the last layer of the model to output embeddings
         self.fc = nn.Linear(in_features=400, out_features=num_frames*self.embed_dim, bias=True)
 
         # Freeze all the layers except the last layer
-        for name, param in self.model.named_parameters():
+        for name, param in self.backbone.named_parameters():
             if name != 'fc.weight' and name != 'fc.bias':
                 param.requires_grad = False
 

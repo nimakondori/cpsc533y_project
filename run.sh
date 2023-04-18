@@ -4,7 +4,7 @@
 cuda=${1:-"0"}
 filename=${2:-"run.py"}
 config_filename=${3:-"default.yml"}
-save_dir=${4:-"debug_run"}
+save_dir=${4:-"fixed_video_size"}
 
 export CUDA_VISIBLE_DEVICES=$cuda
 

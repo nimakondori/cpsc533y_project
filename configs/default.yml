@@ -8,9 +8,9 @@ train:
   wandb_run_name: dgx
   wandb_mode: online
   wandb_log_steps: 1 # Log every n steps
-  wandb_group_name: fixed_video_size_experiment # bunch multiple runs into a group
+  wandb_group_name: experiments # bunch multiple runs into a group
   wandb_entity: nimako 
-  use_wandb: True
+  use_wandb: False
 
   optimizer:
     lr: 0.001
@@ -62,7 +62,7 @@ data:
   frame_size: 224
   max_frames: 32 # Number of samples prior to subsampling
   n_sampled_frames: 32 # Number of frame to subsample
-  max_clips: 3 # Number of back to back clips to extract per video
+  max_clips: 2 # Number of back to back clips to extract per video
   mean: 0.0857377 # for echonet: 0.1292275 | for AS: 0.0857377
   std: 0.1708384 # for echonet: 0.1902375 | for AS: 0.1708384
   use_metadata: True

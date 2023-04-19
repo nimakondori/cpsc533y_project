@@ -40,26 +40,42 @@ class MetaFormerGNN(nn.Module):
         # The lower one must be passed otherwise it should throw an error
         gnn_edge_index = x["gnn_edge_index"]
 
-        
-        video_embedding = self.backbone(vid)
-        
         pc_embeddings = None
-        if self.pc:
+        if self.backbone is not None and self.pc is not None:
             if metadata_pc==None or pc_edge_index == None:
                 raise ValueError("Point cloud and edge index are required for the pointcloud model")    
+            video_embedding = self.backbone(vid)
             # create a fully connected point cloud 
             metadata_pc_obj = Data(x=pc_features, pos=metadata_pc, edge_index=pc_edge_index)
             pc_embeddings = self.pc(metadata_pc_obj)
-    
-        # Concatenate the video embedding and the point cloud embedding
-        if pc_embeddings is not None:
             node_features = torch.cat((video_embedding,
                                        pc_embeddings.unsqueeze(1).expand(video_embedding.shape[0], 
                                                                          video_embedding.shape[1], 
                                                                          -1)), 
                                                                          dim=-1)
-        else:
+        
+        elif self.backbone is not None:
+            video_embedding = self.backbone(vid)
             node_features = video_embedding
+    
+        # Concatenate the video embedding and the point cloud embedding
+        # elif self.pc is not None:
+        #     if metadata_pc==None or pc_edge_index == None:
+        #         raise ValueError("Point cloud and edge index are required for the pointcloud model")    
+        #     metadata_pc_obj = Data(x=pc_features, pos=metadata_pc, edge_index=pc_edge_index)
+        #     pc_embeddings = self.pc(metadata_pc_obj)          
+        #     # Really hacky way of doing this. We need to fix this based on the mask 
+        #     # Here we are assuming that the number of frames is the same as the number of nodes in the graph
+        #     num_frames = (gnn_edge_index[ 0, -1, -1] + 1).item()
+        #     node_features = torch.cat((video_embedding,
+        #                                # This is a really hacky way of doing this.
+        #                                pc_embeddings.unsqueeze(1).expand(-1, 
+        #                                                                  num_frames, 
+        #                                                                  -1)), 
+        #                                                                  dim=-1)
+        else:
+            raise NotImplementedError("At least one of the submodels pc or backbone must be initialized")
+            
 
         data_list = [Data(x=node_feature, edge_index=gnn_edge_index) for node_feature in node_features] 
         batch = Batch.from_data_list(data_list)

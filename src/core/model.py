@@ -87,7 +87,7 @@ class ResNet3DBackbone(nn.Module):
         self.fc = nn.Sequential(
             nn.Linear(in_features=400, out_features=4*num_frames*self.embed_dim, bias=True),
             nn.ReLU(inplace=True),
-            nn.Linear(in_features=2*num_frames*self.embed_dim, out_features=num_frames*self.embed_dim, bias=True),
+            nn.Linear(in_features=2*num_frames*self.embed_dim, out_features=num_frames*self.embed_dim, bias=True))
 
         # Freeze all the layers except the last layer
         for name, param in self.model.named_parameters():

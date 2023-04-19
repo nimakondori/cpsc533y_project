@@ -38,17 +38,17 @@ model:
     - pc
   backbone:
     pretrained: True
-    embedding_size: 96
+    embedding_size: 128
 
   gnn:
-    channel_list: [128, 32, 8]
+    channel_list: [256, 64, 16]
     num_classes: 4
     # the length of heads must be one item smaller than the channels list
     heads: [4, 4]
     do_prob: 0.1
   pc:
     in_channels: 6
-    out_channels: 32
+    out_channels: 128
     num_layers: 12
     hidden_dim: 256
     num_heads: 12

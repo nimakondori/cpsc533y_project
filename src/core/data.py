@@ -59,7 +59,7 @@ class AorticStenosisDataset(Dataset):
         # dataset_root = dataset_root.replace('~', os.environ['HOME'])
 
         # read in the data directory CSV as a pandas dataframe
-        dataset = pd.read_csv(join(dataset_path, "annotations-all_short.csv"))
+        dataset = pd.read_csv(join(dataset_path, "annotations-all.csv"))
         # append dataset root to each path in the dataframe
         dataset["path"] = dataset["path"].map(lambda x: join(dataset_path, x))
 
@@ -273,10 +273,10 @@ class AorticStenosisDataset(Dataset):
         if self.use_metadata:
             metadata = self.metadata[self.metadata["patient_id"] == patient_id]
             # Grab the most recent metadata and drop the patient id, and date
-            # metadata = torch.tensor(metadata.sort_values(by='date', ascending=False).drop(
-            #     ["patient_id", "date"], axis=1).values)
+            metadata = torch.tensor(metadata.sort_values(by='date', ascending=False).drop(
+                ["patient_id", "date"], axis=1).iloc[0].values)
             # iloc [0] is for studies that are duplicated
-            metadata = torch.tensor((metadata[metadata["date"] == study_date]).drop(["patient_id", "date"], axis=1).iloc[0].values)
+            # metadata = torch.tensor((metadata[metadata["date"] == study_date]).drop(["patient_id", "date"], axis=1).iloc[0].values)
             # Create point cloud 
             metadata_pc, pc_edge_index, pc_features = self.create_point_cloud(metadata)
 

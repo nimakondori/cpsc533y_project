@@ -25,11 +25,7 @@ train:
     classification_lambda: 1
 
   evaluator:
-<<<<<<< Updated upstream
     standards: ["acc", "mae", "bacc"] # Can include mae, r2, f1, acc
-=======
-    standards: ["acc", "mae"] # Can include mae, r2, f1, acc
->>>>>>> Stashed changes
     eval_metric: acc # Must be one of values specified in standards
     maximize: True
 

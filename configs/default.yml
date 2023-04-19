@@ -25,9 +25,9 @@ train:
     classification_lambda: 1
 
   evaluator:
-    standards: ["acc", "mae"] # Can include mae, r2, f1, acc
-    eval_metric: mae # Must be one of values specified in standards
-    maximize: False
+    standards: ["acc", "mae", "bacc"] # Can include mae, r2, f1, acc
+    eval_metric: acc # Must be one of values specified in standards
+    maximize: True
 
 model:
   checkpoint_path: # Must be specified for testing. Optional for training.

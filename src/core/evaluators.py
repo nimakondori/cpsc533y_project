@@ -295,7 +295,7 @@ class BalancedAccuracyEvaluator(object):
     def compute(self) -> float:
         """
         Computes the mae using the internal predictions and labels arrays
-        :return: mae
+        :return: accuracy
         """
 
         self.accuracy = balanced_accuracy_score(y_true=self.y_true, y_pred=self.y_pred)

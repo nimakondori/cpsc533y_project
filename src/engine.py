@@ -124,8 +124,7 @@ class Engine:
         self.sweep = sweep
         self.config = config
 
-        self.config.model.update({"mode": self.config.train.mode,
-                                  "n_sampled_frames": self.config.data.n_sampled_frames})
+        self.config.model.update({"mode": self.config.train.mode})
         # Make sure wandb_log_steps is divisble by batch size
         self.config.train.batch_size = (
             self.config.train.batch_size if self.config.train else 1

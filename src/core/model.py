@@ -79,16 +79,20 @@ class MetaFormerGNN(nn.Module):
         return param_dict
 
 class ResNet3DBackbone(nn.Module):
-    def __init__(self, pretrained, num_frames, last_layer_num=3,  embedding_size=128):
+    def __init__(self, pretrained, num_frames, embedding_size=128):
         super(ResNet3DBackbone, self).__init__()
         self.embed_dim = embedding_size
-        self.r2p1d = models.r2plus1d_18(pretrained=pretrained)
-        self.backbone = nn.Sequential(*(list(self.r2p1d.children())[:last_layer_num]))
+        self.model = models.r2plus1d_18(pretrained=pretrained)
         # Modify the last layer of the model to output embeddings
-        self.fc = nn.Linear(in_features=400, out_features=num_frames*self.embed_dim, bias=True)
+        self.fc = nn.Sequential(
+            nn.Linear(in_features=400, out_features=4*num_frames*self.embed_dim, bias=True),
+            nn.ReLU(inplace=True),
+            nn.Linear(in_features=4*num_frames*self.embed_dim, out_features=2*num_frames*self.embed_dim, bias=True),
+            nn.ReLU(inplace=True),
+            nn.Linear(in_features=2*num_frames*self.embed_dim, out_features=num_frames*self.embed_dim, bias=True))
 
         # Freeze all the layers except the last layer
-        for name, param in self.backbone.named_parameters():
+        for name, param in self.model.named_parameters():
             if name != 'fc.weight' and name != 'fc.bias':
                 param.requires_grad = False
 

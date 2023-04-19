@@ -85,7 +85,7 @@ class ResNet3DBackbone(nn.Module):
         self.model = models.r2plus1d_18(pretrained=pretrained)
         # Modify the last layer of the model to output embeddings
         self.fc = nn.Sequential(
-            nn.Linear(in_features=400, out_features=4*num_frames*self.embed_dim, bias=True),
+            nn.Linear(in_features=400, out_features=2*num_frames*self.embed_dim, bias=True),
             nn.ReLU(inplace=True),
             nn.Linear(in_features=2*num_frames*self.embed_dim, out_features=num_frames*self.embed_dim, bias=True))
 

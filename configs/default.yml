@@ -5,16 +5,16 @@ train:
   seed: 0
 
   wandb_project_name: MetaformerGNN
-  wandb_run_name: dgx
+  wandb_run_name: dgx_big_model
   wandb_mode: online
   wandb_log_steps: 1 # Log every n steps
   wandb_group_name: experiments # bunch multiple runs into a group
   wandb_entity: nimako 
-  use_wandb: False
+  use_wandb: True
 
   optimizer:
-    lr: 0.001
-    weight_decay: 0.0001
+    lr: 0.0001
+    weight_decay: 0.000001
 
   scheduler:
     patience: 10
@@ -38,14 +38,14 @@ model:
     - pc
   backbone:
     pretrained: True
-    embedding_size: 128
+    embedding_size: 384
 
   gnn:
-    channel_list: [256, 64, 16]
+    channel_list: [512, 512, 512, 512, 512, 512, 512, 512, 512, 512, 512]
     num_classes: 4
     # the length of heads must be one item smaller than the channels list
-    heads: [4, 4]
-    do_prob: 0.1
+    heads: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12]
+    do_prob: 0.3
   pc:
     in_channels: 6
     out_channels: 128
@@ -60,7 +60,7 @@ data:
   # dataset_filename: annotations-all.csv
   # dataset_path: /arc/project/st-puranga-1/datasets/aortic-stenonsis/round2
   frame_size: 224
-  max_frames: 32 # Number of samples prior to subsampling
+  max_frames: 16 # Number of samples prior to subsampling
   n_sampled_frames: 32 # Number of frame to subsample
   max_clips: 2 # Number of back to back clips to extract per video
   mean: 0.0857377 # for echonet: 0.1292275 | for AS: 0.0857377

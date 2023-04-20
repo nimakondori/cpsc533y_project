@@ -115,7 +115,9 @@ class ResNet3DBackbone(nn.Module):
         self.model = models.r2plus1d_18(pretrained=pretrained)
         # Modify the last layer of the model to output embeddings
         self.fc = nn.Sequential(
-            nn.Linear(in_features=400, out_features=num_vids*num_frames*self.embed_dim //2 , bias=True),
+            nn.Linear(in_features=400, out_features=num_vids*num_frames*self.embed_dim //4 , bias=True),
+            nn.ReLU(inplace=True),
+            nn.Linear(in_features=num_vids*num_frames*self.embed_dim //4, out_features=num_vids*num_frames*self.embed_dim //2 , bias=True),
             nn.ReLU(inplace=True),
             nn.Linear(in_features=num_vids*num_frames*self.embed_dim //2, out_features=num_vids*num_frames*self.embed_dim, bias=True))
 
@@ -153,7 +155,7 @@ class GNNClassifier(nn.Module):
         # Add the input layer
         self.gnn_layers.append(GATConv(channel_list[0], channel_list[1], heads[0]))
         for i in range(1, len(channel_list) - 1):
-            self.gnn_layers.append(GATConv(in_channels=channel_list[i] * heads[i],
+            self.gnn_layers.append(GATConv(in_channels=channel_list[i],
                                            out_channels=channel_list[i+1], 
                                            heads=heads[i],
                                            dropout=do_prob))

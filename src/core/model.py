@@ -6,6 +6,7 @@ import torchvision.models.video as models
 
 from torch_geometric.nn import PointTransformerConv, MLP
 from torch_geometric.data import Data, Batch
+from torch_geometric.utils import to_undirected
 
 
 
@@ -37,8 +38,19 @@ class MetaFormerGNN(nn.Module):
         metadata_pc = x.get("metadata", None)
         pc_edge_index = x.get("pc_edge_index", None)
         pc_features = x.get("pc_features", None)
-        # The lower one must be passed otherwise it should throw an error
-        gnn_edge_index = x["gnn_edge_index"]
+        mask = x['mask']
+        batch_size = vid.shape[0]
+        mask_reshaped = mask.view(batch_size, 1, -1)
+        real_frames = []
+        for b in range(mask_reshaped.shape[0]):
+            for v in range(mask_reshaped.shape[1]):
+                real_frames.append(torch.where(mask_reshaped[b, v])[0])
+
+        # Create edges between adjacent real frames
+        edges = []
+        for frames in real_frames:
+            edges.append(torch.combinations(frames, with_replacement=True).T)
+
 
         pc_embeddings = None
         if self.backbone is not None and self.pc is not None:
@@ -48,15 +60,16 @@ class MetaFormerGNN(nn.Module):
             # create a fully connected point cloud 
             metadata_pc_obj = Data(x=pc_features, pos=metadata_pc, edge_index=pc_edge_index)
             pc_embeddings = self.pc(metadata_pc_obj)
-            node_features = torch.cat((video_embedding,
-                                       pc_embeddings.unsqueeze(1).expand(video_embedding.shape[0], 
-                                                                         video_embedding.shape[1], 
-                                                                         -1)), 
-                                                                         dim=-1)
+            node_features = torch.cat((video_embedding * mask.unsqueeze(-1).float(),
+                                       pc_embeddings.unsqueeze(1).unsqueeze(1).expand(video_embedding.shape[0], 
+                                                                                      video_embedding.shape[1], 
+                                                                                      video_embedding.shape[2], 
+                                                                                      -1)), 
+                                                                                      dim=-1)
         
         elif self.backbone is not None:
             video_embedding = self.backbone(vid)
-            node_features = video_embedding
+            node_features = video_embedding * mask.unsqueeze(-1).float()
     
         # Concatenate the video embedding and the point cloud embedding
         # elif self.pc is not None:
@@ -76,8 +89,9 @@ class MetaFormerGNN(nn.Module):
         else:
             raise NotImplementedError("At least one of the submodels pc or backbone must be initialized")
             
+        node_features = node_features.view(node_features.shape[0],-1, node_features.shape[-1])
 
-        data_list = [Data(x=node_feature, edge_index=gnn_edge_index) for node_feature in node_features] 
+        data_list = [Data(x=node_features[i], edge_index=edges[i]) for i in range(batch_size)] 
         batch = Batch.from_data_list(data_list)
         # pass the graph through the GNN
         # TODO: Make sure the softmax is applied to the right dim and check if we need logits here
@@ -95,15 +109,15 @@ class MetaFormerGNN(nn.Module):
         return param_dict
 
 class ResNet3DBackbone(nn.Module):
-    def __init__(self, pretrained, num_frames, embedding_size=128):
+    def __init__(self, pretrained, num_frames, num_vids=2, embedding_size=128):
         super(ResNet3DBackbone, self).__init__()
         self.embed_dim = embedding_size
         self.model = models.r2plus1d_18(pretrained=pretrained)
         # Modify the last layer of the model to output embeddings
         self.fc = nn.Sequential(
-            nn.Linear(in_features=400, out_features=2*num_frames*self.embed_dim, bias=True),
+            nn.Linear(in_features=400, out_features=num_vids*num_frames*self.embed_dim //2 , bias=True),
             nn.ReLU(inplace=True),
-            nn.Linear(in_features=2*num_frames*self.embed_dim, out_features=num_frames*self.embed_dim, bias=True))
+            nn.Linear(in_features=num_vids*num_frames*self.embed_dim //2, out_features=num_vids*num_frames*self.embed_dim, bias=True))
 
         # Freeze all the layers except the last layer
         for name, param in self.model.named_parameters():
@@ -126,7 +140,7 @@ class ResNet3DBackbone(nn.Module):
         with torch.no_grad():
             embeddings = self.fc(self.model(video))
         
-        embeddings = embeddings.reshape(batch_size, num_frames, self.embed_dim)
+        embeddings = embeddings.reshape(batch_size, num_vids, num_frames, self.embed_dim)
         # Return the embeddings
         return embeddings
 
@@ -152,7 +166,7 @@ class GNNClassifier(nn.Module):
 
         # Compute GNN features
         for gnn_layer in self.gnn_layers:
-            x = gnn_layer(data.x, data.edge_index[0,...])
+            x = gnn_layer(data.x, data.edge_index)
             x = F.relu(x)
             x = F.dropout(x, p=self.p, training=self.training)
 

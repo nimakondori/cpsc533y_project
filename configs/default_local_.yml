@@ -13,8 +13,8 @@ train:
   use_wandb: False
 
   optimizer:
-    lr: 0.001
-    weight_decay: 0.00001
+    lr: 0.00001
+    weight_decay: 0.000001
 
   scheduler:
     patience: 10
@@ -60,7 +60,7 @@ data:
   # dataset_filename: annotations-all.csv
   # dataset_path: /arc/project/st-puranga-1/datasets/aortic-stenonsis/round2
   frame_size: 224
-  max_frames: 10 # Number of samples prior to subsampling
+  max_frames: 32 # Number of samples prior to subsampling
   max_clips: 4 # Number of back to back clips to extract per video
   mean: 0.0857377 # for echonet: 0.1292275 | for AS: 0.0857377
   std: 0.1708384 # for echonet: 0.1902375 | for AS: 0.1708384

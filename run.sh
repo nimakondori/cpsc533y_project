@@ -4,7 +4,7 @@
 cuda=${1:-"0"}
 filename=${2:-"run.py"}
 config_filename=${3:-"default.yml"}
-save_dir=${4:-"experiment/fixed_edge_index/"}
+save_dir=${4:-"experiment/big_model/"}
 
 export CUDA_VISIBLE_DEVICES=$cuda
 

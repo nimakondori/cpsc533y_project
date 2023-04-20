@@ -95,7 +95,7 @@ class MetaFormerGNN(nn.Module):
         batch = Batch.from_data_list(data_list)
         # pass the graph through the GNN
         # TODO: Make sure the softmax is applied to the right dim and check if we need logits here
-        logits, y_pred = self.gnn(batch)
+        y_pred = self.gnn(batch)
         return y_pred
         
             
@@ -153,7 +153,7 @@ class GNNClassifier(nn.Module):
         # Add the input layer
         self.gnn_layers.append(GATConv(channel_list[0], channel_list[1], heads[0]))
         for i in range(1, len(channel_list) - 1):
-            self.gnn_layers.append(GATConv(in_channels=channel_list[i] * heads[i],
+            self.gnn_layers.append(GATConv(in_channels=channel_list[i]*heads[i-1],
                                            out_channels=channel_list[i+1], 
                                            heads=heads[i],
                                            dropout=do_prob))
@@ -163,20 +163,24 @@ class GNNClassifier(nn.Module):
 
     def forward(self, data):
         # x: (batch_size, embedding_size)
-
+        x, edge_index = data.x, data.edge_index
         # Compute GNN features
-        for gnn_layer in self.gnn_layers:
-            x = gnn_layer(data.x, data.edge_index)
-            x = F.relu(x)
+        for gnn_layer in self.gnn_layers[:-1]:
+            x = gnn_layer(x, edge_index)
+            x = F.gelu(x)
             x = F.dropout(x, p=self.p, training=self.training)
+
+        # apply the last layer
+        x = self.gnn_layers[-1](x, data.edge_index)
 
         # Reshape the data back to the oiiginal shape
         x = x.reshape(data.num_graphs, -1, x.shape[-1])
         # Compute final output
-        # y = self.softmax(self.fc(x.mean(dim=1))) # Global average pooling over frames
+        # y = self.softmax(self.fc(x.mean(dim=1)))
+        # Global average pooling over nodes
         x = self.fc(x.mean(dim=1))
         # y = self.softmax(x)
-        return x, x
+        return x
      
 class PointCloud(nn.Module):
     def __init__(self, 

@@ -1,6 +1,6 @@
 train:
   epochs: 1000
-  batch_size: 5
+  batch_size: 2
   mode: as
   seed: 0
 
@@ -14,7 +14,7 @@ train:
 
   optimizer:
     lr: 0.001
-    weight_decay: 0.00001
+    weight_decay: 0.0001
 
   scheduler:
     patience: 10
@@ -25,12 +25,12 @@ train:
     classification_lambda: 1
 
   evaluator:
-    standards: ["acc", "mae"] # Can include mae, r2, f1, acc
-    eval_metric: mae # Must be one of values specified in standards
-    maximize: False
+    standards: ["acc", "bacc", "mae"] # Can include mae, r2, f1, acc
+    eval_metric: acc # Must be one of values specified in standards
+    maximize: True
 
 model:
-  checkpoint_path: "logs/first_run_debug32/checkpoint_best.pth" # Must be specified for testing. Optional for training.
+  checkpoint_path: "" # Must be specified for testing. Optional for training.
   num_classes: 4
   sub_models:
     - backbone  
@@ -41,17 +41,17 @@ model:
     embedding_size: 128
 
   gnn:
-    channel_list: [256, 64, 16]
+    channel_list: [256, 256, 256, 256, 256, 256, 256, 256, 256, 256]
     num_classes: 4
     # the length of heads must be one item smaller than the channels list
-    heads: [4, 4]
-    do_prob: 0.5
+    heads: [12, 12, 12, 12, 12, 12, 12, 12, 12]
+    do_prob: 0.2
   pc:
     in_channels: 6
     out_channels: 128
-    num_layers: 4
+    num_layers: 10
     hidden_dim: 256
-    num_heads: 8
+    num_heads: 12
     dropout: 0.3
 
 data:
@@ -61,7 +61,6 @@ data:
   # dataset_path: /arc/project/st-puranga-1/datasets/aortic-stenonsis/round2
   frame_size: 224
   max_frames: 32 # Number of samples prior to subsampling
-  n_sampled_frames: 32 # Number of frame to subsample
   max_clips: 4 # Number of back to back clips to extract per video
   mean: 0.0857377 # for echonet: 0.1292275 | for AS: 0.0857377
   std: 0.1708384 # for echonet: 0.1902375 | for AS: 0.1708384

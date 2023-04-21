@@ -1,9 +1,9 @@
-from src.core.evaluators import AccuracyEvaluator, R2Evaluator, F1ScoreEvaluator, MAEEvaluator
+from src.core.evaluators import AccuracyEvaluator, F1ScoreEvaluator, MAEEvaluator, BalancedAccuracyEvaluator
 
 EVALUATORS = {
-    # "r2": R2Evaluator,
     "f1": F1ScoreEvaluator,
     "acc": AccuracyEvaluator,
+    "bacc": BalancedAccuracyEvaluator,
     "mae": MAEEvaluator,
 }
 

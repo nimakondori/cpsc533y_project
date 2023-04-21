@@ -1,17 +1,17 @@
 train:
   epochs: 1000
   batch_size: 10
-  batch_size: 10
   mode: as
   seed: 0
 
   wandb_project_name: MetaformerGNN
-  wandb_run_name: purang_32_video_only
+  wandb_run_name: purang_32_large_model
   wandb_mode: online
   wandb_log_steps: 1 # Log every n steps
-  wandb_group_name: fixed_video_size_experiment # bunch multiple runs into a group
+  wandb_group_name: experiment # bunch multiple runs into a group
   wandb_entity: nimako 
   use_wandb: False
+
   optimizer:
     lr: 0.001
     weight_decay: 0.0001
@@ -25,7 +25,7 @@ train:
     classification_lambda: 1
 
   evaluator:
-    standards: ["acc", "mae"] # Can include mae, r2, f1, acc
+    standards: ["acc", "mae", "bacc"] # Can include mae, r2, f1, acc
     eval_metric: acc # Must be one of values specified in standards
     maximize: True
 
@@ -38,17 +38,18 @@ model:
     # - pc
   backbone:
     pretrained: True
-    embedding_size: 256
+    embedding_size: 128
 
   gnn:
-    channel_list: [128, 32, 8]
+    channel_list: [256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256]
     num_classes: 4
     # the length of heads must be one item smaller than the channels list
-    heads: [4, 4]
-    do_prob: 0.2
+    heads: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12]
+    do_prob: 0.3
+
   pc:
     in_channels: 6
-    out_channels: 32
+    out_channels: 128
     num_layers: 12
     hidden_dim: 256
     num_heads: 12
@@ -62,7 +63,7 @@ data:
   frame_size: 224
   max_frames: 32 # Number of samples prior to subsampling
   n_sampled_frames: 32 # Number of frame to subsample
-  max_clips: 4 # Number of back to back clips to extract per video
+  max_clips: 2 # Number of back to back clips to extract per video
   mean: 0.0857377 # for echonet: 0.1292275 | for AS: 0.0857377
   std: 0.1708384 # for echonet: 0.1902375 | for AS: 0.1708384
   use_metadata: True

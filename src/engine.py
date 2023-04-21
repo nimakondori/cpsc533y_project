@@ -124,8 +124,7 @@ class Engine:
         self.sweep = sweep
         self.config = config
 
-        self.config.model.update({"mode": self.config.train.mode,
-                                  "n_sampled_frames": self.config.data.n_sampled_frames})
+        self.config.model.update({"mode": self.config.train.mode})
         # Make sure wandb_log_steps is divisble by batch size
         self.config.train.batch_size = (
             self.config.train.batch_size if self.config.train else 1
@@ -164,7 +163,9 @@ class Engine:
         # Build the model
         self.checkpoint_path = self.config.model.pop("checkpoint_path")
         # Add the batch and num_frame info to the model backbone config
-        self.config.model["backbone"].update({"num_frames": self.config.data.max_frames})
+        self.config.model["backbone"].update({"num_frames": self.config.data.max_frames,
+                                              # Hacky addition of num_vids to the backbone config
+                                              "num_vids": 2})
         self.model = model_builder.build(self.config.model)
 
         # Build the criteria

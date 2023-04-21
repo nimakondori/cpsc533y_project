@@ -18,7 +18,7 @@ elif [[ "$command" == "run" ]]; then
      	      --name=nima_cpsc533y_project  \
       	      --volume=$HOME/workspace/repos/cpsc533y_project:/workspace/cpsc533y_project \
       	      --volume=$HOME/workspace/datasets/as_tom/:/mnt/data/ \
-			  --shm-size 4G\
+			  --shm-size 8G\
       	      $final_tag
 else
 	echo "invalid command. Use build or run"

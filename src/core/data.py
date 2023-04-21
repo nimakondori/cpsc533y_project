@@ -273,17 +273,16 @@ class AorticStenosisDataset(Dataset):
         if self.use_metadata:
             metadata = self.metadata[self.metadata["patient_id"] == patient_id]
             # Grab the most recent metadata and drop the patient id, and date
-            # metadata = torch.tensor(metadata.sort_values(by='date', ascending=False).drop(
-            #     ["patient_id", "date"], axis=1).values)
+            metadata = torch.tensor(metadata.sort_values(by='date', ascending=False).drop(
+                ["patient_id", "date"], axis=1).iloc[0].values)
             # iloc [0] is for studies that are duplicated
-            metadata = torch.tensor((metadata[metadata["date"] == study_date]).drop(["patient_id", "date"], axis=1).iloc[0].values)
+            # metadata = torch.tensor((metadata[metadata["date"] == study_date]).drop(["patient_id", "date"], axis=1).iloc[0].values)
             # Create point cloud 
             metadata_pc, pc_edge_index, pc_features = self.create_point_cloud(metadata)
 
         # Create a fully connected graph with the video frames as nodes
-
-        gnn_edge_index = torch.combinations(torch.arange(cine.shape[1]), with_replacement=True).T
-        gnn_edge_index = gnn_edge_index[:, gnn_edge_index[0] != gnn_edge_index[1]]
+        # gnn_edge_index = torch.combinations(torch.arange(cine.shape[1] if self.train else cine.shape[2]), with_replacement=True).T
+        # gnn_edge_index = gnn_edge_index[:, gnn_edge_index[0] != gnn_edge_index[1]]
                     
         # When not self.train, the evaluation grabs all the possible clips form the video
         return {
@@ -293,7 +292,7 @@ class AorticStenosisDataset(Dataset):
             "metadata": metadata_pc,
             "pc_edge_index": pc_edge_index,
             "pc_features": pc_features,
-            "gnn_edge_index": gnn_edge_index,
+            # "gnn_edge_index": gnn_edge_index,
             # "class_label": torch.zeros(1),
         }
 

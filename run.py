@@ -3,7 +3,7 @@ import os
 import yaml
 import shutil
 from src.engine import Engine
-from src.utils.utils import apply_logger_configs
+from src.utils.utils import apply_logger_configs, print_cuda_statistics
 import logging
 
 
@@ -43,7 +43,12 @@ def run():
     # Copy the provided config file into save_dir
     shutil.copyfile(args.config_path, os.path.join(args.save_dir, "config.yml"))
 
+<<<<<<< HEAD
     logger = apply_logger_configs(save_dir=args.save_dir)
+=======
+    # Create and apply configs to logger
+    logger = apply_logger_configs(args.save_dir)
+>>>>>>> 87e69f26d060ba1b58d232bf84e76cd83e75ee07
 
     # Create the engine taking care of building different components and starting training/inference
     engine = Engine(
@@ -53,6 +58,8 @@ def run():
         train=not args.test,
         sweep=args.sweep,
     )
+
+    print_cuda_statistics(logger=logger)
 
     if args.test:
         engine.evaluate()

@@ -169,7 +169,7 @@ class GNNClassifier(nn.Module):
         # Compute GNN features
         for gnn_layer in self.gnn_layers[:-1]:
             x = gnn_layer(x, edge_index)
-            x = F.gelu(x)
+            x = F.leaky_relu(x)
             x = F.dropout(x, p=self.p, training=self.training)
 
         # apply the last layer

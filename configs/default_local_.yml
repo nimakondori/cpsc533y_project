@@ -25,7 +25,7 @@ train:
     classification_lambda: 1
 
   evaluator:
-    standards: ["acc", "bacc", "mae"] # Can include mae, r2, f1, acc
+    standards: ["acc", "mae", "f1"] # Can include mae, r2, f1, acc
     eval_metric: acc # Must be one of values specified in standards
     maximize: True
 
@@ -41,10 +41,10 @@ model:
     embedding_size: 128
 
   gnn:
-    channel_list: [256, 256, 256, 256, 256, 256, 256, 256, 256, 256]
+    channel_list: [256, 256, 256]
     num_classes: 4
     # the length of heads must be one item smaller than the channels list
-    heads: [12, 12, 12, 12, 12, 12, 12, 12, 12]
+    heads: [12, 12]
     do_prob: 0.2
   pc:
     in_channels: 6

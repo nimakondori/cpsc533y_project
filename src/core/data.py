@@ -59,7 +59,7 @@ class AorticStenosisDataset(Dataset):
         # dataset_root = dataset_root.replace('~', os.environ['HOME'])
 
         # read in the data directory CSV as a pandas dataframe
-        dataset = pd.read_csv(join(dataset_path, "annotations-all.csv"))
+        dataset = pd.read_csv(join(dataset_path, "annotations-all_short.csv"))
         # append dataset root to each path in the dataframe
         dataset["path"] = dataset["path"].map(lambda x: join(dataset_path, x))
 

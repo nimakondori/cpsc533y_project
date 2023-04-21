@@ -487,9 +487,6 @@ class Engine:
                     }
                 )
 
-            log_str += "- Best {} Measurement = {}".format(
-                eval_type.upper(), self.best_eval_metric
-            )
 
             if self.config.train.use_wandb:
                 wandb.log(
@@ -500,7 +497,9 @@ class Engine:
                         "epoch": epoch,
                     }
                 )
-
+        log_str += "- Best {} Measurement = {}".format(
+                eval_type.upper(), self.best_eval_metric
+            )
         self.logger.info(log_str)
 
     def _forward_path(self, data_dict):

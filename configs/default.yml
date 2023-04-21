@@ -25,7 +25,7 @@ train:
     classification_lambda: 1
 
   evaluator:
-    standards: ["acc", "mae", "bacc"] # Can include mae, r2, f1, acc
+    standards: ["acc", "mae", "f1"] # Can include mae, r2, f1, acc
     eval_metric: acc # Must be one of values specified in standards
     maximize: True
 

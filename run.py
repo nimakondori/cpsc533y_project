@@ -43,12 +43,10 @@ def run():
     # Copy the provided config file into save_dir
     shutil.copyfile(args.config_path, os.path.join(args.save_dir, "config.yml"))
 
-<<<<<<< HEAD
-    logger = apply_logger_configs(save_dir=args.save_dir)
-=======
     # Create and apply configs to logger
-    logger = apply_logger_configs(args.save_dir)
->>>>>>> 87e69f26d060ba1b58d232bf84e76cd83e75ee07
+    logger = apply_logger_configs(save_dir=args.save_dir)
+
+
 
     # Create the engine taking care of building different components and starting training/inference
     engine = Engine(
